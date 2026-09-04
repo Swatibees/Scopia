@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A private, browser-based workspace for planning and conducting an independent scoping review.">
+  <title>Scopia — Scoping Review Workspace</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;1,400&family=Playfair+Display:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <section id="setup-screen" class="setup-screen" aria-labelledby="setup-title">
+    <div class="setup-panel">
+      <p class="eyebrow">Independent evidence synthesis</p>
+      <h1 id="setup-title">Scopia</h1>
+      <p class="setup-intro">A structured workspace for moving from a review question to a transparent, reusable evidence dataset.</p>
+
+      <form id="setup-form" class="setup-form">
+        <label>
+          <span>Researcher</span>
+          <input id="setup-researcher" autocomplete="name" placeholder="Your name" required>
+        </label>
+        <label>
+          <span>Institution <small>optional</small></span>
+          <input id="setup-institution" placeholder="Independent researcher">
+        </label>
+        <label>
+          <span>Working paper title</span>
+          <textarea id="setup-project" rows="3" required>Identifying and Monitoring Psychological and Cognitive Difficulties in Youth-Onset Type 2 Diabetes: A Scoping Review</textarea>
+        </label>
+        <button class="button button-primary button-block" type="submit">Create review workspace</button>
+      </form>
+
+      <button id="load-from-setup" class="text-button" type="button">Continue from a Scopia backup</button>
+      <p class="privacy-note">Your review data stays in this browser unless you export it.</p>
+    </div>
+  </section>
+
+  <div id="app" class="app" hidden>
+    <aside class="sidebar" aria-label="Review stages">
+      <div class="brand">
+        <span class="brand-name">Scopia</span>
+        <span class="brand-sub">Scoping review workspace</span>
+      </div>
+
+      <div class="project-mini">
+        <span id="sidebar-researcher"></span>
+        <button id="project-settings-button" class="text-button" type="button">Edit project</button>
+      </div>
+
+      <nav id="stage-nav" class="stage-nav"></nav>
+
+      <div class="sidebar-progress">
+        <div class="progress-copy">
+          <span>Review progress</span>
+          <span id="progress-value">0%</span>
+        </div>
+        <div class="progress-track" aria-hidden="true"><span id="progress-bar"></span></div>
+      </div>
+
+      <div class="sidebar-actions">
+        <button id="backup-button" class="button button-quiet" type="button">Save backup</button>
+        <button id="load-button" class="button button-quiet" type="button">Load backup</button>
+        <button id="export-button" class="button button-quiet" type="button">Export research files</button>
+      </div>
+    </aside>
+
+    <header class="mobile-header">
+      <div>
+        <span class="brand-name">Scopia</span>
+        <span id="mobile-stage-name" class="mobile-stage-name"></span>
+      </div>
+      <button id="mobile-menu-button" class="button button-quiet" type="button" aria-expanded="false" aria-controls="mobile-nav">Stages</button>
+    </header>
+    <nav id="mobile-nav" class="mobile-nav" hidden></nav>
+
+    <main class="main">
+      <header class="stage-header">
+        <div>
+          <p id="stage-eyebrow" class="eyebrow"></p>
+          <h2 id="stage-title"></h2>
+          <p id="stage-description" class="stage-description"></p>
+        </div>
+        <button id="complete-stage-button" class="button button-outline" type="button"></button>
+      </header>
+      <div id="stage-content" class="stage-content"></div>
+    </main>
+  </div>
+
+  <dialog id="settings-dialog" class="dialog">
+    <form id="settings-form" method="dialog">
+      <div class="dialog-heading">
+        <div>
+          <p class="eyebrow">Project settings</p>
+          <h2>Edit review details</h2>
+        </div>
+        <button class="dialog-close" type="button" data-close-dialog="settings-dialog" aria-label="Close">×</button>
+      </div>
+      <label class="field">
+        <span>Researcher</span>
+        <input id="settings-researcher" required>
+      </label>
+      <label class="field">
+        <span>Institution</span>
+        <input id="settings-institution">
+      </label>
+      <label class="field">
+        <span>Working paper title</span>
+        <textarea id="settings-title" rows="3" required></textarea>
+      </label>
+      <div class="dialog-actions">
+        <button class="button button-primary" value="save" type="submit">Save changes</button>
+        <button class="button button-outline" type="button" data-close-dialog="settings-dialog">Cancel</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="export-dialog" class="dialog dialog-wide">
+    <div class="dialog-heading">
+      <div>
+        <p class="eyebrow">Portable research record</p>
+        <h2>Export your work</h2>
+      </div>
+      <button class="dialog-close" type="button" data-close-dialog="export-dialog" aria-label="Close">×</button>
+    </div>
+    <p class="dialog-intro">Export human-readable files for the paper and structured data for the later agent project.</p>
+    <div class="export-grid">
+      <button class="export-option" type="button" data-export="protocol">
+        <strong>Protocol</strong><span>Markdown</span>
+      </button>
+      <button class="export-option" type="button" data-export="searches">
+        <strong>Search log</strong><span>CSV</span>
+      </button>
+      <button class="export-option" type="button" data-export="screening">
+        <strong>Screening decisions</strong><span>CSV</span>
+      </button>
+      <button class="export-option" type="button" data-export="charting">
+        <strong>Data charting</strong><span>CSV</span>
+      </button>
+      <button class="export-option" type="button" data-export="agent">
+        <strong>Agent training set</strong><span>JSONL</span>
+      </button>
+      <button class="export-option" type="button" data-export="audit">
+        <strong>Decision audit trail</strong><span>CSV</span>
+      </button>
+      <button class="export-option" type="button" data-export="report">
+        <strong>Review report</strong><span>Markdown</span>
+      </button>
+    </div>
+  </dialog>
+
+  <dialog id="confirm-dialog" class="dialog dialog-small">
+    <form method="dialog">
+      <h2 id="confirm-title">Confirm action</h2>
+      <p id="confirm-message" class="dialog-intro"></p>
+      <div class="dialog-actions">
+        <button id="confirm-yes" class="button button-danger" value="confirm">Confirm</button>
+        <button class="button button-outline" value="cancel">Cancel</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <input id="backup-file-input" type="file" accept="application/json,.json" hidden>
+  <input id="study-file-input" type="file" accept=".csv,.ris,text/csv,application/x-research-info-systems" hidden>
+
+  <script src="app.js"></script>
+</body>
+</html>
